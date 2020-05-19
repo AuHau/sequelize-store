@@ -1,0 +1,67 @@
+{
+  "name": "sequelize-store",
+  "version": "0.1.0",
+  "description": "Key Value store backed by Sequelize",
+  "keywords": [
+    "Sequelize",
+    "Store",
+    "key-value"
+  ],
+  "homepage": "https://github.com/AuHau/sequelize-store",
+  "bugs": {
+    "url": "https://github.com/AuHau/sequelize-store/issues/"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Adam Uhlíř",
+    "email": "adam@uhlir.dev"
+  },
+  "files": [
+    "/lib",
+    "/types"
+  ],
+  "directories": {
+    "lib": "src",
+    "test": "test/"
+  },
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AuHau/sequelize-store.git"
+  },
+  "scripts": {
+    "compile": "tasegir compile",
+    "docs": "typedoc --mode modules --excludeNotExported --readme none --excludePrivate  --tsconfig ./node_modules/tasegir/src/config/tsconfig.json --exclude 'src/providers/*,test/**/*' --out docs src",
+    "types-check": "tasegir types-check",
+    "lint": "tasegir lint",
+    "release": "tasegir release",
+    "test": "tasegir test --target node"
+  },
+  "dependencies": {
+    "reflect-metadata": "^0.1.13",
+    "sequelize": "^5.21.7",
+    "sequelize-typescript": "^1.1.0"
+  },
+  "devDependencies": {
+    "@fluffy-spoon/substitute": "^1.133.0",
+    "@types/chai": "^4.2.11",
+    "@types/chai-as-promised": "^7.1.2",
+    "@types/dirty-chai": "^2.0.2",
+    "@types/mocha": "^7.0.2",
+    "@types/sinon": "^9.0.0",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "dirty-chai": "^2.0.1",
+    "sinon": "^9.0.1",
+    "sqlite3": "^4.2.0",
+    "tasegir": "^1.7.1"
+  },
+  "engines": {
+    "node": ">=10.0.0",
+    "npm": ">=6.0.0"
+  },
+  "types": "types/index.d.ts",
+  "contributors": [
+    "Adam Uhlíř <adam@uhlir.dev>"
+  ]
+}
