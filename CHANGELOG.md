@@ -1,3 +1,13 @@
+<a name="0.3.0"></a>
+# [0.3.0](https://github.com/AuHau/sequelize-store/compare/v0.2.0...v0.3.0) (2020-05-20)
+
+
+### Features
+
+* purge function ([089f5e3](https://github.com/AuHau/sequelize-store/commit/089f5e3))
+
+
+
 <a name="0.2.0"></a>
 # [0.2.0](https://github.com/AuHau/sequelize-store/compare/v0.1.0...v0.2.0) (2020-05-20)
 
