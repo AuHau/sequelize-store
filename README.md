@@ -104,6 +104,10 @@ Parameters:
 Parameters:
  - `scope?: string` - The returned object will be scoped to given scoped. That means that all keys will prefixed with the string.
 
+#### `purge() -> Promise<void>`
+
+> Delete all data in database and the local cache
+
 ## Contribute
 
 There are some ways you can make this module better:

@@ -71,16 +71,29 @@ function actionNotAllowed (action: string): () => never {
   }
 }
 
+let localStore: StoreObject
 let proxyObject: any
 const dbQueue = queue({ autostart: true, concurrency: 1 })
 dbQueue.on('error', (e: Error) => {
   throw new EntryError(`There was an error during updating database of SequelizeStore: ${e}`)
 })
 
+/**
+ * Function mainly for testing.
+ * It resets the internal store object that is always returned by the getObject().
+ * Hence init() can be then called again with new schema.
+ * !!! Be aware !!! If used without understanding this might break things!
+ */
 export function reset (): void {
   proxyObject = undefined
 }
 
+/**
+ * Returns the Store's object that uses the Schema defined in init().
+ * Always return the same object so can be called from anywhere as many times you need.
+ *
+ * @param scope - It is possible to get an object that has scoped the namespace to some prefix defined by this parameter.
+ */
 export function getObject (scope?: string): StoreObject {
   if (!proxyObject) {
     throw new Error('SequelizeStore was not initialized!')
@@ -121,6 +134,26 @@ export function getObject (scope?: string): StoreObject {
   return proxyObject
 }
 
+/**
+ * Purge database of all data and also purges the local cache.
+ */
+export function purge (): void {
+  if (!proxyObject) {
+    throw new Error('SequelizeStore was not initialized!')
+  }
+
+  dbQueue.push(() => StoreEntry.destroy({ where: {}, truncate: true }))
+  localStore = {}
+}
+
+/**
+ * Initialize Sequelize Store for usage.
+ * This adds the Sequelize Storage model to Sequelize and validate Schema.
+ *
+ * @param sequelize - Instance of Sequelize to be used for the Store
+ * @param schema - Object that define scheme of the Store.
+ * @param tableName - Name of the table to be used for storing the data.
+ */
 export async function init (sequelize: Sequelize, schema: Schema, { tableName = 'data-store' } = {} as StoreOptions): Promise<void> {
   if (proxyObject) {
     return
@@ -136,7 +169,7 @@ export async function init (sequelize: Sequelize, schema: Schema, { tableName = 
   }
 
   validateSchema(schema)
-  const localStore: StoreObject = {}
+  localStore = {}
 
   for (const entry of await StoreEntry.findAll()) {
     localStore[entry.key] = entry.parseValue(schema)

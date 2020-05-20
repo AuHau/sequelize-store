@@ -3,7 +3,7 @@ import dirtyChai from 'dirty-chai'
 import chaiAsPromised from 'chai-as-promised'
 
 import { QueryTypes, Sequelize } from 'sequelize'
-import { init, getObject, reset } from '../src'
+import { init, getObject, reset, purge } from '../src'
 
 chai.use(chaiAsPromised)
 chai.use(dirtyChai)
@@ -16,7 +16,7 @@ function sleep<T> (ms: number, ...args: T[]): Promise<T> {
 describe('SequelizeStore', function () {
   let sequelize: Sequelize
 
-  async function getEntries (): Promise<object> {
+  async function getDbEntries (): Promise<object> {
     // noinspection SqlDialectInspection,SqlNoDataSourceInspection,ES6RedundantAwait
     const results = await sequelize.query('SELECT * FROM `data-store`', {
       type: QueryTypes.SELECT
@@ -63,7 +63,7 @@ describe('SequelizeStore', function () {
     expect(obj.object).to.eql({ some: 'object' })
 
     await sleep(100)
-    const dbEntries = await getEntries()
+    const dbEntries = await getDbEntries()
     expect(dbEntries).to.eql({
       bool: 'false',
       string: 'hey',
@@ -88,7 +88,7 @@ describe('SequelizeStore', function () {
       object: 'json'
     })
 
-    const dbEntries = await getEntries()
+    const dbEntries = await getDbEntries()
     expect(dbEntries).to.eql({
       bool: 'false',
       string: 'hey',
@@ -128,7 +128,7 @@ describe('SequelizeStore', function () {
     expect(obj.object).to.eql({ some: 'object' })
 
     await sleep(100)
-    const dbEntries = await getEntries()
+    const dbEntries = await getDbEntries()
     expect(dbEntries).to.eql({
       bool: 'false',
       int: '1',
@@ -166,6 +166,43 @@ describe('SequelizeStore', function () {
     obj.int = 1
 
     expect(Object.entries(obj)).to.eql([['bool', false], ['string', 'hey'], ['int', 1]])
+  })
+
+  describe('purge', function () {
+    it('should remove data from database and local store', async () => {
+      await init(sequelize, {
+        string: 'string',
+        bool: 'bool',
+        int: 'int',
+        float: 'float',
+        object: 'json'
+      })
+
+      const obj = getObject()
+      obj.bool = false
+      obj.string = 'hey'
+      obj.int = 1
+      obj.float = 2.3
+      obj.object = { some: 'object' }
+
+      await sleep(100)
+      expect(obj.string).to.eql('hey')
+      let dbEntries = await getDbEntries()
+      expect(dbEntries).to.eql({
+        bool: 'false',
+        string: 'hey',
+        int: '1',
+        float: '2.3',
+        object: '{"some":"object"}'
+      })
+
+      await purge()
+
+      await sleep(100)
+      dbEntries = await getDbEntries()
+      expect(dbEntries).to.eql({})
+      expect(obj.string).to.be.undefined()
+    })
   })
 
   describe('scope', function () {
