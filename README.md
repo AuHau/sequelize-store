@@ -45,7 +45,9 @@ const sequelize = sequelizeFactory()
 await init(sequelize, {
   adminId: 'int', // Lets say this was already set previously and hence is pesisted in DB
   secretToken: { type: 'string', default: 'notSoRandomSecret' },
-  someCoolObject: 'json'
+  someCoolObject: 'json',
+  scope1_id: 'int',
+  scope1_name: 'string'
 })
 
 const store = getObject()
@@ -57,6 +59,13 @@ console.log(store.adminId) // --> 5
 
 delete store.adminId
 console.log(store.adminId) // --> undefined
+console.log(store.adminId) // --> 5
+
+// Scopes
+store.scope1_id = 10
+const scopedStore = getObject('scope1_')
+console.log(scopedStore.id) // --> 10
+console.log(scopedStore.name) // --> undefined
 ```
 
 ### Schema
@@ -88,9 +97,12 @@ Parameters:
  - `options` - Store's options
     - `options.tableName: string` - string defining name of the table where the data should be stored
 
-#### `getObject() -> object`
+#### `getObject(scope?: string) -> object`
 
 > Returns the Store objects which is a singleton, so you can call it anywhere (after initialization!)
+
+Parameters:
+ - `scope?: string` - The returned object will be scoped to given scoped. That means that all keys will prefixed with the string.
 
 ## Contribute
 

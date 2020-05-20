@@ -29,8 +29,9 @@ describe('SequelizeStore', function () {
     }, {})
   }
 
-  beforeEach(() => {
+  beforeEach(async () => {
     sequelize = new Sequelize('sqlite://:memory:')
+    await sequelize.sync()
     reset()
   })
 
@@ -148,5 +149,90 @@ describe('SequelizeStore', function () {
     const obj = getObject()
     expect(obj.string).to.eql('ahoj')
     expect(obj.bool).to.be.undefined()
+  })
+
+  it('should list values', async () => {
+    await init(sequelize, {
+      string: 'string',
+      bool: 'bool',
+      int: 'int',
+      float: 'float',
+      object: 'json'
+    })
+
+    const obj = getObject()
+    obj.bool = false
+    obj.string = 'hey'
+    obj.int = 1
+
+    expect(Object.entries(obj)).to.eql([['bool', false], ['string', 'hey'], ['int', 1]])
+  })
+
+  describe('scope', function () {
+    it('should scope get operation', async () => {
+      await init(sequelize, {
+        prefixString: 'string',
+        bool: 'bool',
+        prefixInt: 'int',
+        float: 'float',
+        object: 'json'
+      })
+
+      const obj = getObject()
+      obj.bool = false
+      obj.prefixString = 'hey'
+      obj.prefixInt = 1
+      obj.float = 2.3
+      obj.object = { some: 'object' }
+
+      const prefixedObj = getObject('prefix')
+      expect(prefixedObj.String).to.eql('hey')
+      expect(prefixedObj.Int).to.eql(1)
+      expect(() => prefixedObj.bool).to.throw('Property prefixbool was not defined in Store\'s schema!')
+    })
+
+    it('should scope set operation', async () => {
+      await init(sequelize, {
+        prefixString: 'string',
+        bool: 'bool',
+        prefixInt: 'int',
+        float: 'float',
+        object: 'json'
+      })
+
+      const obj = getObject()
+      obj.bool = false
+      obj.prefixString = 'hey'
+      obj.prefixInt = 1
+      obj.float = 2.3
+      obj.object = { some: 'object' }
+
+      const prefixedObj = getObject('prefix')
+      prefixedObj.String = 'hola'
+      expect(prefixedObj.String).to.eql('hola')
+      expect(obj.prefixString).to.eql('hola')
+    })
+
+    it('should scope delete operation', async () => {
+      await init(sequelize, {
+        prefixString: 'string',
+        bool: 'bool',
+        prefixInt: 'int',
+        float: 'float',
+        object: 'json'
+      })
+
+      const obj = getObject()
+      obj.bool = false
+      obj.prefixString = 'hey'
+      obj.prefixInt = 1
+      obj.float = 2.3
+      obj.object = { some: 'object' }
+
+      const prefixedObj = getObject('prefix')
+      delete prefixedObj.String
+      expect(prefixedObj.String).to.be.undefined()
+      expect(obj.prefixString).to.be.undefined()
+    })
   })
 })

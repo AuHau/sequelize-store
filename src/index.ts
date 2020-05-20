@@ -7,9 +7,8 @@ import {
   getType,
   isType,
   isValueOptions,
-  NativeTypes,
   parseType,
-  Schema,
+  Schema, StoreObject,
   StoreOptions,
   validateType
 } from './definitions'
@@ -32,7 +31,6 @@ class StoreEntry extends Model {
 const DbStoreDefinition = {
   key: { type: DataTypes.STRING, primaryKey: true },
   value: { type: DataTypes.STRING }
-
 }
 
 const STORE_MODEL_NAME = 'sequelizeStore-dbstore'
@@ -67,8 +65,10 @@ function validateSchema (schema: Schema): void {
   }
 }
 
-function actionNotAllowed (): never {
-  throw new Error('Sorry this action is not supported for SequelizeStore')
+function actionNotAllowed (action: string): () => never {
+  return () => {
+    throw new Error(`Sorry ${action} action is not supported for SequelizeStore object`)
+  }
 }
 
 let proxyObject: any
@@ -81,9 +81,41 @@ export function reset (): void {
   proxyObject = undefined
 }
 
-export function getObject (): Record<string, NativeTypes> {
+export function getObject (scope?: string): StoreObject {
   if (!proxyObject) {
     throw new Error('SequelizeStore was not initialized!')
+  }
+
+  if (scope) {
+    if (typeof scope !== 'string') {
+      throw new TypeError('Scope has to be a string!')
+    }
+
+    return new Proxy(proxyObject, {
+      get (target: StoreObject, name: PropertyKey): any {
+        if (typeof name === 'symbol') {
+          throw new EntryError('Symbols are not supported by SequelizeStore')
+        }
+
+        return Reflect.get(target, `${scope}${name}`)
+      },
+      set (target: StoreObject, name: PropertyKey, value: any): boolean {
+        if (typeof name === 'symbol') {
+          throw new EntryError('Symbols are not supported by SequelizeStore')
+        }
+
+        target[`${scope}${name}`] = value
+        return true
+      },
+      deleteProperty (target: StoreObject, name: PropertyKey): boolean {
+        if (typeof name === 'symbol') {
+          throw new EntryError('Symbols are not supported by SequelizeStore')
+        }
+
+        delete target[`${scope}${name}`]
+        return true
+      }
+    })
   }
 
   return proxyObject
@@ -104,13 +136,13 @@ export async function init (sequelize: Sequelize, schema: Schema, { tableName = 
   }
 
   validateSchema(schema)
-  const localStore: Record<string, NativeTypes> = {}
+  const localStore: StoreObject = {}
 
   for (const entry of await StoreEntry.findAll()) {
     localStore[entry.key] = entry.parseValue(schema)
   }
 
-  proxyObject = new Proxy({}, {
+  proxyObject = new Proxy(localStore, {
     get (target: {}, name: PropertyKey): any {
       if (typeof name === 'symbol') {
         throw new EntryError('Symbols are not supported by SequelizeStore')
@@ -153,7 +185,7 @@ export async function init (sequelize: Sequelize, schema: Schema, { tableName = 
       const expectedType = getType(propertyDefinitions)
 
       if (!validateType(value, expectedType)) {
-        throw new EntryError(`Invalid type for ${name}! Expected ${expectedType} type.`)
+        throw new TypeError(`Invalid type for ${name}! Expected ${expectedType} type.`)
       }
 
       if (typeof value === 'object' && typeof value !== 'string') {
@@ -182,11 +214,10 @@ export async function init (sequelize: Sequelize, schema: Schema, { tableName = 
 
       return true
     },
-    getPrototypeOf: actionNotAllowed,
-    setPrototypeOf: actionNotAllowed,
-    getOwnPropertyDescriptor: actionNotAllowed,
-    defineProperty: actionNotAllowed,
-    apply: actionNotAllowed,
-    construct: actionNotAllowed
+    getPrototypeOf: actionNotAllowed('getPrototypeOf'),
+    setPrototypeOf: actionNotAllowed('setPrototypeOf'),
+    defineProperty: actionNotAllowed('defineProperty'),
+    apply: actionNotAllowed('apply'),
+    construct: actionNotAllowed('construct')
   })
 }

@@ -14,6 +14,8 @@ export interface ValueOptions {
 
 export type Schema = Record<string, ValueOptions | Type>
 
+export type StoreObject = Record<string, NativeTypes>
+
 /// /////////////////////////////////////////////////////////////////////////////////////
 // Helpers function
 
