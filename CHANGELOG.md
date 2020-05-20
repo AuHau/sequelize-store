@@ -1,3 +1,13 @@
+<a name="0.2.0"></a>
+# [0.2.0](https://github.com/AuHau/sequelize-store/compare/v0.1.0...v0.2.0) (2020-05-20)
+
+
+### Features
+
+* scope support ([40b19d2](https://github.com/AuHau/sequelize-store/commit/40b19d2))
+
+
+
 <a name="0.1.0"></a>
 # 0.1.0 (2020-05-20)
 
