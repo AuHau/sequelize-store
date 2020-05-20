@@ -38,23 +38,25 @@
     "test": "tasegir test --target node"
   },
   "dependencies": {
-    "reflect-metadata": "^0.1.13",
-    "sequelize": "^5.21.7",
-    "sequelize-typescript": "^1.1.0"
+    "queue": "^6.0.1",
+    "sequelize": "^5.21.10"
   },
   "devDependencies": {
-    "@fluffy-spoon/substitute": "^1.133.0",
+    "@types/bluebird": "^3.5.31",
     "@types/chai": "^4.2.11",
     "@types/chai-as-promised": "^7.1.2",
     "@types/dirty-chai": "^2.0.2",
     "@types/mocha": "^7.0.2",
-    "@types/sinon": "^9.0.0",
+    "@types/node": "^14.0.1",
+    "@types/validator": "^13.0.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "dirty-chai": "^2.0.1",
-    "sinon": "^9.0.1",
     "sqlite3": "^4.2.0",
     "tasegir": "^1.7.1"
+  },
+  "peerDependencies": {
+    "sequelize": "^5.21.10"
   },
   "engines": {
     "node": ">=10.0.0",

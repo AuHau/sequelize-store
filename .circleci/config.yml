@@ -6,19 +6,19 @@ jobs:
       - image: circleci/node:10
     steps:
       - checkout
-#      - restore_cache:
-#          keys:
-#            # when lock file changes, use increasingly general patterns to restore cache
-#            - node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
-#            - node-v1-{{ .Branch }}-
-#            - node-v1-
+      - restore_cache:
+          keys:
+            # when lock file changes, use increasingly general patterns to restore cache
+            - node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - node-v1-{{ .Branch }}-
+            - node-v1-
       - run:
           name: "Install deps"
           command: npm ci
-#      - save_cache:
-#          paths:
-#            - ./node_modules
-#          key: node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
+      - save_cache:
+          paths:
+            - ./node_modules
+          key: node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
       - run:
           name: "Commit linting"
           command: |
@@ -40,25 +40,18 @@ jobs:
       - image: circleci/node:<< parameters.version >>
     steps:
       - checkout
-      - run:
-          name: "Install deps"
-          command: npm ci
-#      - restore_cache:
-#          keys:
-#            # when lock file changes, use increasingly general patterns to restore cache
-#            - node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
-#            - node-v1-{{ .Branch }}-
-#            - node-v1-
+      - restore_cache:
+          keys:
+            # when lock file changes, use increasingly general patterns to restore cache
+            - node-v1-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - node-v1-{{ .Branch }}-
+            - node-v1-
       - run:
           name: "Install sqlite"
           command: npm install sqlite3
       - run:
           name: "Node tests"
           command: npx tasegir test --target node --reporter lcovonly -- --bail
-#      - sonarcloud/scan
-
-#orbs:
-#  sonarcloud: sonarsource/sonarcloud@1.0.1
 
 workflows:
   test:
@@ -67,18 +60,15 @@ workflows:
       - node-tests:
           version: '10'
           name: node-10
-#          context: SonarCloud
           requires:
             - check
       - node-tests:
           version: '12'
           name: node-12
-#          context: SonarCloud
           requires:
             - check
       - node-tests:
           version: '13'
           name: node-13
-#          context: SonarCloud
           requires:
             - check

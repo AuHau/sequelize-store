@@ -1,7 +1,7 @@
 module.exports = {
   depCheck: {
     ignore: [
-      'sinon', 'tasegir', 'reflect-metadata', '@types/*'
+      'tasegir', '@types/*', 'sqlite3'
     ]
   }
 }

@@ -10,15 +10,87 @@
 
 > Key Value store backed by Sequelize
 
-**Warning: This project is in alpha state. There might (and most probably will) be changes in the future to its API and working. Also, no guarantees can be made about its stability, efficiency, and security at this stage.**
-
 ## Table of Contents
 
+- [Install](#install)
 - [Usage](#usage)
+- [API](#api)
 - [Contribute](#contribute)
 - [License](#license)
 
+## Install
+
+> $ npm install sequelize-store
+
+This package requires `Sequelize` as peer-dependency, but that should
+be already satisfied because most probably you will use this package in projects where it is already present.
+In case not just run:
+
+> $ npm install sequelize
+
 ## Usage
+
+ There are four steps you have to do:
+  1. Define schema and initialize SequelizeStore
+  1. Retrieve the store's object
+  1. Set / retrieve values as you like
+  1. **Profit**
+
+```js
+import {init, getObject} from 'sequelize-store'
+
+const sequelize = sequelizeFactory()
+
+// Define schema and init
+await init(sequelize, {
+  adminId: 'int', // Lets say this was already set previously and hence is pesisted in DB
+  secretToken: { type: 'string', default: 'notSoRandomSecret' },
+  someCoolObject: 'json'
+})
+
+const store = getObject()
+console.log(store.secretToken) // --> 'notSoRandomSecret'
+console.log(store.adminId) // --> undefined
+
+store.adminId = 5
+console.log(store.adminId) // --> 5
+
+delete store.adminId
+console.log(store.adminId) // --> undefined
+```
+
+### Schema
+
+Schema is an object that defines the structure of the Store. Supported types are:
+`bool`, `int`, `float`, `json`, `string`.
+
+The Schema has two following formats
+
+```
+{
+ 'key-name': <<type string>>,
+ otherKeyName: {
+   type: <<type string>>,
+   default: 'some default'
+ }
+}
+```
+
+## API
+
+#### `init(sequelize: Sequelize, schema: Schema, options?: StoreOptions) -> Promise<void>`
+
+> Initialize SequelizeStore for usage
+
+Parameters:
+ - `sequelize: Sequelize` (required) - Instance of Sequelize
+ - `schema: Schema` (required) - Object defining the [Schema](#schema) of the store
+ - `options` - Store's options
+    - `options.tableName: string` - string defining name of the table where the data should be stored
+
+#### `getObject() -> object`
+
+> Returns the Store objects which is a singleton, so you can call it anywhere (after initialization!)
 
 ## Contribute
 
