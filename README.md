@@ -1,6 +1,6 @@
 # Sequelize Store
 
-[![CircleCI](https://flat.badgen.net/circleci/github/auhau/sequelize-store/master)](https://circleci.com/gh/auhau/sequelize-store/)
+[![CircleCI](https://flat.badgen.net/circleci/github/auhau/sequelize-store/master)](https://app.circleci.com/pipelines/github/AuHau/sequelize-store)
 [![Dependency Status](https://david-dm.org/auhau/sequelize-store.svg?style=flat-square)](https://david-dm.org/auhau/sequelize-store)
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
