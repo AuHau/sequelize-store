@@ -14,6 +14,8 @@ import {
 } from './definitions'
 import { EntryError, SchemaError } from './errors'
 
+export { StoreObject, StoreOptions, Type, NativeTypes, ValueOptions, Schema } from './definitions'
+
 class StoreEntry extends Model {
   public key!: string
   public value!: string
