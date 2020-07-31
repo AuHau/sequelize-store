@@ -37,7 +37,7 @@ In case not just run:
   1. **Profit**
 
 ```js
-import {init, getObject} from 'sequelize-store'
+import {init, getObject, getEndPromise} from 'sequelize-store'
 
 const sequelize = sequelizeFactory()
 
@@ -66,6 +66,9 @@ store.scope1_id = 10
 const scopedStore = getObject('scope1_')
 console.log(scopedStore.id) // --> 10
 console.log(scopedStore.name) // --> undefined
+
+// Lets await for everything to be committed to database
+await getEndPromise()
 ```
 
 ### Schema
@@ -107,6 +110,10 @@ Parameters:
 #### `purge() -> Promise<void>`
 
 > Delete all data in database and the local cache
+
+#### `getEndPromise() -> Promise<void>`
+
+>  Function that returns a Promise that is resolved when the DB processing queue is finished with all the pending transactions. If queue is empty Promise is resolved right away.
 
 ## Contribute
 
