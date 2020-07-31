@@ -3,7 +3,7 @@ import dirtyChai from 'dirty-chai'
 import chaiAsPromised from 'chai-as-promised'
 
 import { QueryTypes, Sequelize } from 'sequelize'
-import { init, getObject, reset, purge } from '../src'
+import { init, getObject, reset, purge, getEndPromise } from '../src'
 
 chai.use(chaiAsPromised)
 chai.use(dirtyChai)
@@ -270,6 +270,33 @@ describe('SequelizeStore', function () {
       delete prefixedObj.String
       expect(prefixedObj.String).to.be.undefined()
       expect(obj.prefixString).to.be.undefined()
+    })
+  })
+
+  describe('getEndPromise', function () {
+    it('should wait for the db modifications to finish', async () => {
+      await init(sequelize, {
+        string: 'string',
+        bool: 'bool',
+        int: 'int',
+        float: 'float',
+        object: 'json'
+      })
+
+      const obj = getObject()
+      obj.bool = false
+      obj.string = 'hey'
+      obj.int = 1
+      obj.float = 2.3
+      obj.object = { some: 'object' }
+
+      expect(obj.bool).to.eql(false)
+      expect(obj.string).to.eql('hey')
+      expect(obj.int).to.eql(1)
+      expect(obj.float).to.eql(2.3)
+      expect(obj.object).to.eql({ some: 'object' })
+
+      expect(getEndPromise()).to.be.fulfilled()
     })
   })
 })

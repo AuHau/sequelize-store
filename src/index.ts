@@ -81,6 +81,28 @@ dbQueue.on('error', (e: Error) => {
 })
 
 /**
+ * Function that returns a Promise that is resolved when the DB processing queue
+ * is finished with all the pending transactions. If queue is empty Promise is
+ * resolved right away.
+ *
+ * Be aware that since the queue is in "autostart" mode if you modify the store
+ * after the Promise resolution the queue will start again processing the requests
+ * but this Promise won't "unresolve" as that is restriction of Promises.
+ *
+ * This function should be always at the end of your application life-cycle in order
+ * to guarantee that all information is persisted!
+ */
+export function getEndPromise (): Promise<void> {
+  if (dbQueue.length === 0) {
+    return Promise.resolve()
+  }
+
+  return new Promise(resolve => {
+    dbQueue.on('end', resolve)
+  })
+}
+
+/**
  * Function mainly for testing.
  * It resets the internal store object that is always returned by the getObject().
  * Hence init() can be then called again with new schema.
