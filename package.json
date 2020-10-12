@@ -1,6 +1,6 @@
 {
   "name": "sequelize-store",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Key Value store backed by Sequelize",
   "keywords": [
     "Sequelize",
