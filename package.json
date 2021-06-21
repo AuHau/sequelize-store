@@ -46,7 +46,7 @@
     "@types/chai-as-promised": "^7.1.2",
     "@types/dirty-chai": "^2.0.2",
     "@types/mocha": "^8.0.3",
-    "@types/node": "^14.0.1",
+    "@types/node": "^15.12.4",
     "@types/validator": "^13.0.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
